@@ -2,107 +2,106 @@
 
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Google Gemini](https://img.shields.io/badge/AI_Model-Google_Gemini-4285F4.svg?style=flat&logo=google-gemini)](https://aistudio.google.com/)
-[![Vanilla JS](https://img.shields.io/badge/Frontend-Vanilla_JS-F7DF1E.svg?style=flat&logo=javascript)](https://developer.mozilla.org/fr/docs/Web/JavaScript)
+[![Vanilla JS](https://img.shields.io/badge/Frontend-Vanilla_JS-F7DF1E.svg?style=flat&logo=javascript)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![esbuild](https://img.shields.io/badge/Bundler-esbuild-FFCF00.svg?style=flat&logo=esbuild)](https://esbuild.github.io/)
 
-**Xur** est un assistant IA conversationnel léger et hautement personnalisable, conçu pour s'intégrer instantanément sur n'importe quel site web via une seule balise `<script>`.
-Propulsé par **Google Gemini (gemini-2.5-flash)** et une architecture backend **FastAPI**, Xur répond automatiquement et en **temps réel (Server-Sent Events streaming)** aux questions des visiteurs en s'appuyant sur la base de connaissances de l'entreprise.
+**Xur** is a lightweight, highly customizable conversational AI assistant designed to integrate instantly into any website via a single `<script>` tag.
+Powered by **Google Gemini** and a **FastAPI** backend architecture, Xur responds automatically and in **real-time (Server-Sent Events streaming)** to visitor questions based on your company's knowledge base.
 
 ---
 
-## 📸 Aperçu de la Démo
+## 📸 Demo Preview
 
-L'assistant se présente sous la forme d'un widget flottant moderne avec effets de flou (glassmorphism), typography modernisée, suggestions d'options rapides et support complet du formatage Markdown.
-
----
-
-## ⚡ Caractéristiques Principales
-
-- 🚀 **Intégration Ultra-Simple** : Une seule balise `<script src="..." api-key="..."></script>` suffit pour l'intégrer à Shopify, WooCommerce ou un site HTML vitrine.
-- 💬 **Streaming temps réel (SSE)** : Flux continu de réponses générées mot par mot par l'IA sans attente globale.
-- 📚 **RAG / Contexte Métier (`knowledge_base.md`)** : Réponses structurées strictement basées sur la documentation d'entreprise (livraisons, retours, FAQ, offres).
-- 🎨 **Design Moderne & Responsive** : UI épurée, responsive, compatible mobile et ordinateur, thématisable en CSS.
-- 📦 **Architecture Modulaire Frontend** : Code JavaScript découpé en modules ES6 sous `frontend/src/` et compilé en un bundle unique via `esbuild`.
-- 💸 **0€ de Frais d'Infrastructures (MVP)** : Utilise le quota gratuit de Google AI Studio (15 RPM, 1M tokens/jour) et un mode démo offline automatique si aucune clé n'est configurée.
-- 🔒 **Clean Code & Zero Copernic** : Nettoyage intégral de toutes les références tierces obsolètes.
+The assistant appears as a modern floating widget with glassmorphism blur effects, updated typography, quick suggestion options, and full Markdown formatting support.
 
 ---
 
-## 📁 Structure du Projet
+## ⚡ Key Features
+
+- 🚀 **Ultra-Simple Integration**: A single `<script src="..." api-key="..."></script>` tag is all you need to embed it into Shopify, WooCommerce, or any custom HTML site.
+- 💬 **Real-time Streaming (SSE)**: Continuous flow of responses generated token-by-token by AI with zero latency.
+- 📚 **RAG / Business Context (`knowledge_base.md`)**: Structured answers strictly grounded in company documentation (shipping, returns, FAQ, pricing).
+- 🎨 **Modern & Responsive Design**: Sleek, responsive UI compatible with mobile and desktop devices, customizable via CSS.
+- 📦 **Modular Frontend Architecture**: JavaScript codebase organized into ES6 modules under `frontend/src/` and bundled into a single file via `esbuild`.
+- 💸 **$0 Infrastructure Cost (MVP)**: Leverages Google AI Studio's free tier (15 RPM, 1M tokens/day) and features an automatic offline demo mode if no API key is configured.
+- 🔒 **Clean Codebase**: Completely streamlined and decoupled architecture.
+
+---
+
+## 📁 Project Structure
 
 ```
 Xur/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py              # Application FastAPI, routes & CORS
-│   │   ├── config.py            # Gestion des variables d'environnement
-│   │   ├── knowledge_base.md    # Base de connaissances / Contexte métier pour le LLM
+│   │   ├── main.py              # FastAPI application, routing & CORS
+│   │   ├── config.py            # Environment variable configuration
+│   │   ├── knowledge_base.md    # Knowledge base / Business context for the LLM
 │   │   ├── routers/
-│   │   │   ├── assistant.py     # Configuration du widget (/api/assistant/init)
-│   │   │   └── sse.py           # Endpoint streaming SSE (/sse/get_response)
+│   │   │   ├── assistant.py     # Widget configuration (/api/assistant/init)
+│   │   │   └── sse.py           # SSE streaming endpoint (/sse/get_response)
 │   │   └── services/
-│   │       ├── gemini.py        # Service de streaming API Google Gemini
-│   │       └── session.py       # Gestionnaire de sessions de chat en RAM
-│   ├── requirements.txt         # Dépendances Python (FastAPI, uvicorn, httpx, etc.)
-│   ├── .env.example             # Modèle de variables d'environnement
-│   └── run.py                   # Script de lancement du serveur
+│   │       ├── gemini.py        # Google Gemini API streaming service
+│   │       └── session.py       # In-memory chat session manager
+│   ├── requirements.txt         # Python dependencies (FastAPI, uvicorn, httpx, etc.)
+│   ├── .env.example             # Environment variables template
+│   └── run.py                   # Server entrypoint script
 │
 ├── frontend/
-│   ├── src/                     # Code source modulaire ES6
-│   │   ├── index.js             # Point d'entrée principal (IIFE)
-│   │   ├── chat.js              # Gestionnaire de l'interface chat DOM & état
-│   │   ├── sse.js               # Client EventSource streaming SSE
-│   │   ├── styles.js            # Injection CSS scopée et dynamique
-│   │   ├── markdown.js          # Parser Markdown vers HTML
-│   │   ├── tracker.js           # Tracking événements visiteurs
-│   │   └── utils.js             # Helpers & icônes SVG inline
+│   ├── src/                     # ES6 modular source code
+│   │   ├── index.js             # Main entry point (IIFE)
+│   │   ├── chat.js              # Chat UI DOM manager & state handling
+│   │   ├── sse.js               # SSE streaming EventSource client
+│   │   ├── styles.js            # Scoped & dynamic CSS injection
+│   │   ├── markdown.js          # Markdown-to-HTML parser
+│   │   ├── tracker.js           # Visitor event tracking
+│   │   └── utils.js             # Helpers & inline SVG icons
 │   ├── dist/
-│   │   ├── widget.js            # Bundle JavaScript compilé (esbuild)
-│   │   └── widget.min.js        # Version minifiée pour la production
-│   ├── demo.html                # Page boutique e-commerce de démonstration
-│   └── build.js                 # Script de compilation esbuild
+│   │   ├── widget.js            # Compiled JavaScript bundle (esbuild)
+│   │   └── widget.min.js        # Minified production bundle
+│   ├── demo.html                # E-commerce store demo page
+│   └── build.js                 # esbuild compilation script
 │
-├── widget.js                    # Fichier bundle copié à la racine
-├── README.md                    # Documentation officielle du projet
-├── INTERVIEW.md                 # Questions & choix d'architecture
-└── PROJET.md                    # Spécifications produit & roadmap
+├── widget.js                    # Root copy of the bundled widget JS
+└── README.md                    # Official project documentation
 ```
 
 ---
 
-## 🚀 Démarrage Rapide (Développement Local)
+## 🚀 Quick Start (Local Development)
 
-### 1. Installation du Backend (Python)
+### 1. Backend Setup (Python)
 
 ```bash
 cd backend
 python3 -m venv venv
-source venv/bin/activate  # Sur Linux/macOS
+source venv/bin/activate  # On Linux/macOS
+# On Windows PowerShell: .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-### 2. Configuration de la Clé API Gemini
+### 2. Configure Gemini API Key
 
-Créez ou éditez le fichier `backend/.env` :
+Create or edit the `backend/.env` file:
 
 ```env
-GEMINI_API_KEY=votre_cle_api_google_ai_studio
+GEMINI_API_KEY=your_google_ai_studio_api_key
 PORT=8005
 HOST=0.0.0.0
 ```
 
-> 💡 *Note : Si vous ne renseignez pas de clé API, le backend bascule automatiquement en mode **Démo Offline** pour vous permettre de tester le widget sans configuration.*
+> 💡 *Note: If no API key is specified, the backend automatically falls back to **Offline Demo Mode**, allowing you to test the widget without any configuration.*
 
-### 3. Lancer le Backend
+### 3. Start the Backend
 
 ```bash
 python3 run.py
 ```
-Le serveur démarrera sur **`http://localhost:8005`**.
+The server will start on **`http://localhost:8005`**.
 
-### 4. Compiler le Frontend (esbuild)
+### 4. Build the Frontend (esbuild)
 
-Dans un autre terminal :
+In a separate terminal window:
 
 ```bash
 cd frontend
@@ -110,29 +109,38 @@ npm install
 npm run build
 ```
 
-### 5. Tester sur la Page de Démo
+### 5. Test on Demo Page
 
-Ouvrez simplement votre navigateur sur :
+Simply open your browser to:
 👉 **`http://localhost:8005/demo`**
 
 ---
 
-## 💻 Intégration sur un Site Web (Code HTML)
+## 💻 Website Integration (HTML Code)
 
-Pour intégrer le chatbot Xur sur n'importe quel site web (Shopify, WordPress, Webflow, React, HTML statique) :
+To integrate the Xur chatbot into any website (Shopify, WordPress, Webflow, React, static HTML):
 
 ```html
-<!-- Widget Xur AI Chatbot -->
+<!-- Xur AI Chatbot Widget -->
 <script src="http://localhost:8005/static/widget.js" api-key="demo-key"></script>
 ```
 
 ---
 
-## 🗺️ Roadmap & Perspectives SaaS
+## 🗺️ Roadmap & SaaS Outlook
 
-- [x] **MVP Core** : Backend FastAPI + Streaming SSE + Integration Gemini 2.5 + Bundle esbuild
-- [ ] **Multi-tenancy DB** : Stockage des contextes marchands & historique en PostgreSQL
-- [ ] **Tableau de bord Admin** : Interface de gestion des marchands, personnalisation du thème et analytics (ratings, taux de clics)
+- [x] **MVP Core**: FastAPI Backend + SSE Streaming + Gemini Integration + esbuild Bundler
+- [ ] **Multi-tenancy DB**: Storage for merchant contexts & chat history in PostgreSQL
+- [ ] **Admin Dashboard**: Merchant management UI, theme customization, and analytics (ratings, click-through rates)
+- [ ] **E-commerce Connectors**: Catalog sync with Shopify & WooCommerce
+- [ ] **Subscription System**: API key management & Stripe SaaS billing
+
+---
+
+## 👤 Author
+
+Designed and developed by **[Yacine Hamadouche](https://github.com/yacine20005)**.
+ bord Admin** : Interface de gestion des marchands, personnalisation du thème et analytics (ratings, taux de clics)
 - [ ] **Connecteurs E-commerce** : Synchronisation du catalogue produits Shopify/WooCommerce
 - [ ] **Système d'Abonnement** : Gestion des clés API et facturation Stripe SaaS
 
