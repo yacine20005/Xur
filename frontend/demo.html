@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Démo Xur AI Chatbot — Astryx Bold Minimalism</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,300..900;1,300..900&display=swap');
+
+    :root {
+      --bg: #09090b;
+      --surface: #18181b;
+      --border: #27272a;
+      --text: #f4f4f5;
+      --text-muted: #a1a1aa;
+      --accent: #2563eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Albert Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding-bottom: 100px;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .badge {
+      background: rgba(37, 99, 235, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(37, 99, 235, 0.3);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 9999px;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin-bottom: 18px;
+      background: linear-gradient(135deg, #ffffff 30%, #a1a1aa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 680px;
+      margin: 0 auto 32px auto;
+    }
+
+    /* Mode Selector Pills */
+    .mode-selector {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .mode-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 10px 20px;
+      border-radius: 9999px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-btn:hover, .mode-btn.active {
+      background: #ffffff;
+      color: #09090b;
+      border-color: #ffffff;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-bottom: 50px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #3f3f46;
+    }
+
+    .card h3 {
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #ffffff;
+      color: #09090b;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      font-weight: 700;
+      font-size: 13px;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .inline-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      margin-top: 40px;
+    }
+
+    .inline-section h2 {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      ✨ Xur AI — Astryx Bold Minimalism
+    </div>
+    <span class="badge">Astryx Design System</span>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Assistant IA au design Astryx Bold Minimalism</h1>
+      <p>Testez le widget Xur refactorisé selon les principes d'Astryx : lignes ultra-nettes, typographie bold contrastée et micro-composants fluides.</p>
+
+      <div class="mode-selector">
+        <button class="mode-btn active" onclick="switchMode('sticky', event)">Floating Sticky Window</button>
+        <button class="mode-btn" onclick="switchMode('sticky-bar', event)">Sticky Bar Pill</button>
+        <button class="mode-btn" onclick="switchMode('ai-card', event)">AI Hero Card</button>
+        <button class="mode-btn" onclick="switchMode('inline', event)">Inline Embed Card</button>
+      </div>
+
+      <button class="btn" onclick="window.XurWidget && window.XurWidget.open()">Ouvrir le Chat (Sticky)</button>
+    </section>
+
+    <div class="demo-grid">
+      <div class="card">
+        <h3>📦 Livraisons</h3>
+        <p>Livraison express sous 24/48h. Gratuite à partir de 50€ d'achat.</p>
+        <button class="btn" onclick="window.XurWidget && window.XurWidget.send('Quels sont les délais de livraison ?')">Demander à Xur</button>
+      </div>
+
+      <div class="card">
+        <h3>🔄 Retours faciles</h3>
+        <p>14 jours pour vous rétracter via support@xur-ai.com sans frais.</p>
+        <button class="btn" onclick="window.XurWidget && window.XurWidget.send('Comment faire un retour ?')">Demander à Xur</button>
+      </div>
+
+      <div class="card">
+        <h3>💼 Formules Xur AI</h3>
+        <p>Découvrez notre Starter Pack gratuit et le Pack Pro à 49€/mois.</p>
+        <button class="btn" onclick="window.XurWidget && window.XurWidget.send('Quelles sont les offres Xur ?')">Demander à Xur</button>
+      </div>
+    </div>
+
+    <!-- Inline embed target section -->
+    <div id="inline-embed-container" class="inline-section" style="display:none;">
+      <h2>Zone d'Intégration Inline</h2>
+      <div id="xur-inline-target"></div>
+    </div>
+  </main>
+
+  <script>
+    function switchMode(mode, evt) {
+      const existing = document.getElementById("assistant-xur");
+      if (existing) existing.remove();
+      
+      const inlineCard = document.querySelector(".xur-inline-card");
+      if (inlineCard) inlineCard.remove();
+
+      const inlineContainer = document.getElementById("inline-embed-container");
+      if (mode === "inline") {
+        inlineContainer.style.display = "block";
+      } else {
+        inlineContainer.style.display = "none";
+      }
+
+      const oldScript = document.getElementById("xur-widget-script");
+      if (oldScript) oldScript.remove();
+
+      delete window.XurWidget;
+
+      const script = document.createElement("script");
+      script.id = "xur-widget-script";
+      script.src = "/static/widget.js?v=" + Date.now();
+      script.setAttribute("api-key", "demo-xur-key");
+      script.setAttribute("forceddisplaytype", mode);
+      document.body.appendChild(script);
+
+      if (evt && evt.target) {
+        document.querySelectorAll(".mode-btn").forEach(btn => btn.classList.remove("active"));
+        evt.target.classList.add("active");
+      }
+    }
+
+    // Auto load sticky mode by default
+    switchMode('sticky');
+  </script>
+
+</body>
+</html>
+
+

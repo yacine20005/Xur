@@ -1,0 +1,12 @@
+{
+  "name": "xur-widget",
+  "version": "1.0.0",
+  "description": "Xur AI Chatbot Embeddable Widget",
+  "main": "dist/widget.js",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.2"
+  }
+}

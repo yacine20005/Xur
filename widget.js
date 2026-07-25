@@ -1,0 +1,1150 @@
+(() => {
+  // src/config.js
+  function getScriptTag() {
+    if (typeof document === "undefined")
+      return null;
+    return document.getElementById("xur-widget-script") || document.currentScript || document.querySelector("script[data-xur-widget]") || document.querySelector("script[forceddisplaytype]") || document.querySelector('script[src*="widget.js"]') || document.querySelector('script[src*="widget"]');
+  }
+  function getScriptAttribute(attr) {
+    const tag = getScriptTag();
+    if (!tag)
+      return null;
+    const dataAttr = `data-${attr}`;
+    const camelAttr = attr.replace(/-([a-z])/g, (_, g) => g.toUpperCase());
+    return tag.getAttribute(attr) || tag.getAttribute(dataAttr) || tag.dataset && tag.dataset[camelAttr] || tag.dataset && tag.dataset[attr] || null;
+  }
+  function getApiKey() {
+    return getScriptAttribute("api-key") || getScriptAttribute("data-api-key") || getScriptAttribute("key") || "demo-xur-key-2024";
+  }
+  function getBackendUrl() {
+    const attr = getScriptAttribute("backend-url") || getScriptAttribute("data-backend-url");
+    if (attr)
+      return attr.replace(/\/$/, "");
+    if (typeof window !== "undefined" && window.XUR_BACKEND_URL) {
+      return window.XUR_BACKEND_URL.replace(/\/$/, "");
+    }
+    const tag = getScriptTag();
+    if (tag && tag.src) {
+      try {
+        const parsedUrl = new URL(tag.src, typeof window !== "undefined" ? window.location.href : void 0);
+        return parsedUrl.origin;
+      } catch (e) {
+      }
+    }
+    if (typeof window !== "undefined" && window.location && window.location.origin) {
+      return window.location.origin;
+    }
+    return "http://localhost:8005";
+  }
+  function getLanguage() {
+    return getScriptAttribute("lang") || "fr";
+  }
+
+  // src/styles.js
+  function injectStyles(theme = {}) {
+    if (typeof document === "undefined")
+      return;
+    const existingStyle = document.getElementById("xur-widget-styles");
+    if (existingStyle) {
+      existingStyle.remove();
+    }
+    const fontFamily = theme.fontFamily || "'Albert Sans', 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif";
+    const css = `
+    @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,300..900;1,300..900&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+    /* Astryx Dark Obsidian Design Tokens (Uniform UX Systems) */
+    :root {
+      --xur-bg-surface: rgba(14, 15, 20, 0.94);
+      --xur-bg-card: rgba(255, 255, 255, 0.05);
+      --xur-bg-subtle: rgba(8, 9, 12, 0.4);
+      --xur-border: rgba(255, 255, 255, 0.12);
+      --xur-border-hover: rgba(255, 255, 255, 0.25);
+      --xur-text-primary: #ffffff;
+      --xur-text-secondary: #d4d4d8;
+      --xur-text-muted: #8e8e98;
+      --xur-brand: #ffffff;
+      --xur-brand-color: #09090b;
+      --xur-radius-card: 22px;
+      --xur-radius-pill: 9999px;
+      --xur-shadow-card: 0 28px 70px -10px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+      --xur-font: ${fontFamily};
+    }
+
+    #assistant-xur,
+    #assistant-xur *,
+    .xur-inline-card,
+    .xur-inline-card * {
+      box-sizing: border-box !important;
+      font-family: var(--xur-font) !important;
+      -webkit-font-smoothing: antialiased !important;
+      -moz-osx-font-smoothing: grayscale !important;
+    }
+
+    #assistant-xur h1, #assistant-xur h2, #assistant-xur h3, #assistant-xur p, #assistant-xur ul, #assistant-xur li,
+    .xur-inline-card h1, .xur-inline-card h2, .xur-inline-card h3, .xur-inline-card p, .xur-inline-card ul, .xur-inline-card li {
+      margin: 0;
+      padding: 0;
+    }
+
+    #assistant-xur.xur-mode-sticky {
+      position: fixed !important;
+      bottom: 24px !important;
+      right: 24px !important;
+      z-index: 999999 !important;
+    }
+
+    #assistant-xur.xur-mode-sticky-bar {
+      position: fixed !important;
+      bottom: 24px !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      z-index: 999999 !important;
+      width: calc(100% - 40px) !important;
+      max-width: 540px !important;
+    }
+
+    /* ------------------------------------
+       Astryx Floating Launcher Button (Fitts's Law: 60px target)
+    ------------------------------------ */
+    #assistant-xur .xur-launcher-btn {
+      width: 58px !important;
+      height: 58px !important;
+      border-radius: var(--xur-radius-pill) !important;
+      background: #ffffff !important;
+      color: #09090b !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease !important;
+      position: relative !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    #assistant-xur .xur-launcher-btn:hover {
+      transform: scale(1.08) !important;
+      box-shadow: 0 14px 40px rgba(255, 255, 255, 0.22) !important;
+    }
+
+    #assistant-xur .xur-launcher-badge {
+      position: absolute !important;
+      top: 3px !important;
+      right: 3px !important;
+      width: 12px !important;
+      height: 12px !important;
+      background-color: #10b981 !important;
+      border: 2px solid #09090b !important;
+      border-radius: 50% !important;
+      box-shadow: 0 0 10px #10b981 !important;
+    }
+
+    /* ------------------------------------
+       Astryx Chat Window Card (Law of Common Region)
+    ------------------------------------ */
+    #assistant-xur .xur-chat-window {
+      width: 385px !important;
+      height: 590px !important;
+      max-width: calc(100vw - 32px) !important;
+      max-height: calc(85vh - 24px) !important;
+      background: var(--xur-bg-surface) !important;
+      backdrop-filter: blur(28px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+      border: 1px solid var(--xur-border) !important;
+      border-radius: var(--xur-radius-card) !important;
+      box-shadow: var(--xur-shadow-card) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      z-index: 999999 !important;
+      transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      transform-origin: bottom right !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    .xur-inline-card {
+      width: 100% !important;
+      max-width: 600px !important;
+      height: 530px !important;
+      max-height: calc(85vh - 24px) !important;
+      background: var(--xur-bg-surface) !important;
+      backdrop-filter: blur(28px) saturate(190%) !important;
+      -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+      border: 1px solid var(--xur-border) !important;
+      border-radius: var(--xur-radius-card) !important;
+      box-shadow: var(--xur-shadow-card) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
+    }
+
+    #assistant-xur .xur-chat-window.hidden {
+      display: none !important;
+      opacity: 0 !important;
+      transform: scale(0.95) translateY(14px) !important;
+    }
+
+    /* Astryx Header (Jakob's Law: Standard Header pattern) */
+    #assistant-xur .xur-header,
+    .xur-inline-card .xur-header {
+      background: rgba(18, 20, 26, 0.95) !important;
+      border-bottom: 1px solid var(--xur-border) !important;
+      padding: 14px 18px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 12px !important;
+      margin: 0 !important;
+      flex-shrink: 0 !important;
+    }
+
+    #assistant-xur .xur-header-info,
+    .xur-inline-card .xur-header-info {
+      display: flex !important;
+      align-items: center !important;
+      gap: 10px !important;
+    }
+
+    #assistant-xur .xur-avatar,
+    .xur-inline-card .xur-avatar {
+      width: 36px !important;
+      height: 36px !important;
+      border-radius: 50% !important;
+      background: linear-gradient(135deg, #27272a 0%, #09090b 100%) !important;
+      border: 1px solid rgba(255, 255, 255, 0.18) !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      color: #ffffff !important;
+      flex-shrink: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    #assistant-xur .xur-header-details,
+    .xur-inline-card .xur-header-details {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 2px !important;
+    }
+
+    #assistant-xur .xur-header-title,
+    .xur-inline-card .xur-header-title {
+      font-size: 14.5px !important;
+      font-weight: 700 !important;
+      letter-spacing: -0.01em !important;
+      line-height: 1.2 !important;
+      color: #ffffff !important;
+    }
+
+    #assistant-xur .xur-badge-online,
+    .xur-inline-card .xur-badge-online {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 5px !important;
+      font-size: 11px !important;
+      font-weight: 600 !important;
+      color: #34d399 !important;
+    }
+
+    #assistant-xur .xur-badge-online::before,
+    .xur-inline-card .xur-badge-online::before {
+      content: '' !important;
+      width: 6px !important;
+      height: 6px !important;
+      background: #10b981 !important;
+      border-radius: 50% !important;
+      display: inline-block !important;
+      box-shadow: 0 0 8px #10b981 !important;
+    }
+
+    #assistant-xur .xur-header-actions,
+    .xur-inline-card .xur-header-actions {
+      display: flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+    }
+
+    #assistant-xur .xur-icon-btn,
+    .xur-inline-card .xur-icon-btn {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid rgba(255, 255, 255, 0.08) !important;
+      color: var(--xur-text-secondary) !important;
+      cursor: pointer !important;
+      width: 32px !important;
+      height: 32px !important;
+      border-radius: 50% !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: all 0.2s ease !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    #assistant-xur .xur-icon-btn:hover,
+    .xur-inline-card .xur-icon-btn:hover {
+      color: #ffffff !important;
+      background: rgba(255, 255, 255, 0.15) !important;
+      border-color: rgba(255, 255, 255, 0.25) !important;
+    }
+
+    /* ------------------------------------
+       Messages Area (Uniform 18px Grid & Law of Proximity)
+    ------------------------------------ */
+    #assistant-xur .xur-messages,
+    .xur-inline-card .xur-messages {
+      flex: 1 !important;
+      padding: 18px !important;
+      overflow-y: auto !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 16px !important;
+      background: var(--xur-bg-subtle) !important;
+      margin: 0 !important;
+    }
+
+    #assistant-xur .xur-messages::-webkit-scrollbar,
+    .xur-inline-card .xur-messages::-webkit-scrollbar {
+      width: 5px !important;
+    }
+
+    #assistant-xur .xur-messages::-webkit-scrollbar-track,
+    .xur-inline-card .xur-messages::-webkit-scrollbar-track {
+      background: transparent !important;
+    }
+
+    #assistant-xur .xur-messages::-webkit-scrollbar-thumb,
+    .xur-inline-card .xur-messages::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12) !important;
+      border-radius: 9999px !important;
+    }
+
+    #assistant-xur .xur-messages::-webkit-scrollbar-thumb:hover,
+    .xur-inline-card .xur-messages::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25) !important;
+    }
+
+    #assistant-xur .xur-msg-wrapper,
+    .xur-inline-card .xur-msg-wrapper {
+      display: flex !important;
+      flex-direction: column !important;
+      max-width: 86% !important;
+      width: fit-content !important;
+      margin: 2px 0 !important;
+      padding: 0 !important;
+    }
+
+    #assistant-xur .xur-msg-wrapper.user,
+    .xur-inline-card .xur-msg-wrapper.user {
+      align-self: flex-end !important;
+      align-items: flex-end !important;
+      margin-left: 20px !important;
+    }
+
+    #assistant-xur .xur-msg-wrapper.assistant,
+    .xur-inline-card .xur-msg-wrapper.assistant {
+      align-self: flex-start !important;
+      align-items: flex-start !important;
+      max-width: 90% !important;
+      margin-right: 16px !important;
+    }
+
+    #assistant-xur .xur-bubble,
+    .xur-inline-card .xur-bubble {
+      padding: 12px 16px !important;
+      border-radius: 18px !important;
+      font-size: 13.5px !important;
+      line-height: 1.58 !important;
+      word-break: break-word !important;
+      letter-spacing: -0.005em !important;
+      margin: 0 !important;
+    }
+
+    #assistant-xur .xur-msg-wrapper.user .xur-bubble,
+    .xur-inline-card .xur-msg-wrapper.user .xur-bubble {
+      background: linear-gradient(135deg, #ffffff 0%, #f4f4f5 100%) !important;
+      color: #09090b !important;
+      font-weight: 600 !important;
+      border-bottom-right-radius: 4px !important;
+      box-shadow: 0 4px 14px rgba(255, 255, 255, 0.12) !important;
+    }
+
+    #assistant-xur .xur-msg-wrapper.assistant .xur-bubble,
+    .xur-inline-card .xur-msg-wrapper.assistant .xur-bubble {
+      background: rgba(255, 255, 255, 0.06) !important;
+      color: #f4f4f5 !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-bottom-left-radius: 4px !important;
+      backdrop-filter: blur(12px) !important;
+    }
+
+    #assistant-xur .xur-bubble a,
+    .xur-inline-card .xur-bubble a {
+      color: #60a5fa !important;
+      text-decoration: underline !important;
+    }
+
+    #assistant-xur .xur-bubble ul,
+    .xur-inline-card .xur-bubble ul {
+      margin-left: 16px !important;
+      margin-top: 6px !important;
+    }
+
+    #assistant-xur .xur-bubble li,
+    .xur-inline-card .xur-bubble li {
+      margin-bottom: 4px !important;
+    }
+
+    #assistant-xur .xur-bubble code,
+    .xur-inline-card .xur-bubble code {
+      background: rgba(0, 0, 0, 0.4) !important;
+      border: 1px solid var(--xur-border) !important;
+      color: #38bdf8 !important;
+      padding: 2px 6px !important;
+      border-radius: 6px !important;
+      font-size: 12px !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+    }
+
+    /* ------------------------------------
+       Astryx Quick-Prompt Suggestions (Hick's Law: Choice Simplification)
+    ------------------------------------ */
+    #assistant-xur .xur-options-container,
+    .xur-inline-card .xur-options-container {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+      width: 100% !important;
+      margin-top: 10px !important;
+      padding: 2px 0 !important;
+    }
+
+    #assistant-xur .xur-option-btn,
+    .xur-inline-card .xur-option-btn {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      color: #e4e4e7 !important;
+      padding: 8px 14px !important;
+      border-radius: var(--xur-radius-pill) !important;
+      font-size: 12.5px !important;
+      font-weight: 600 !important;
+      cursor: pointer !important;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      text-align: left !important;
+      line-height: 1.35 !important;
+      margin: 1px 0 !important;
+    }
+
+    #assistant-xur .xur-option-btn:hover,
+    .xur-inline-card .xur-option-btn:hover {
+      background: #ffffff !important;
+      color: #09090b !important;
+      border-color: #ffffff !important;
+      transform: translateY(-2px) !important;
+      box-shadow: 0 6px 18px rgba(255, 255, 255, 0.15) !important;
+    }
+
+    /* ------------------------------------
+       Astryx Chat Composer Box (Fitts's & Miller's Law)
+    ------------------------------------ */
+    #assistant-xur .xur-composer-card,
+    .xur-inline-card .xur-composer-card {
+      padding: 12px 18px 14px 18px !important;
+      background: rgba(14, 15, 20, 0.95) !important;
+      border-top: 1px solid var(--xur-border) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 8px !important;
+      margin: 0 !important;
+      flex-shrink: 0 !important;
+    }
+
+    #assistant-xur .xur-composer-box,
+    .xur-inline-card .xur-composer-box {
+      background: rgba(255, 255, 255, 0.05) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      border-radius: var(--xur-radius-pill) !important;
+      padding: 4px 4px 4px 14px !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 8px !important;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s !important;
+      margin: 0 !important;
+    }
+
+    #assistant-xur .xur-composer-box:focus-within,
+    .xur-inline-card .xur-composer-box:focus-within {
+      border-color: rgba(255, 255, 255, 0.4) !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08) !important;
+    }
+
+    #assistant-xur .xur-attach-btn,
+    .xur-inline-card .xur-attach-btn {
+      background: transparent !important;
+      border: none !important;
+      color: var(--xur-text-secondary) !important;
+      cursor: pointer !important;
+      padding: 4px !important;
+      border-radius: 50% !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: color 0.2s !important;
+      flex-shrink: 0 !important;
+      margin: 0 !important;
+    }
+
+    #assistant-xur .xur-attach-btn:hover,
+    .xur-inline-card .xur-attach-btn:hover {
+      color: #ffffff !important;
+    }
+
+    #assistant-xur .xur-input,
+    .xur-inline-card .xur-input {
+      flex: 1 !important;
+      border: none !important;
+      background: transparent !important;
+      font-size: 13.5px !important;
+      outline: none !important;
+      color: #ffffff !important;
+      padding: 5px 0 !important;
+      margin: 0 !important;
+    }
+
+    #assistant-xur .xur-input::placeholder,
+    .xur-inline-card .xur-input::placeholder {
+      color: var(--xur-text-muted) !important;
+    }
+
+    #assistant-xur .xur-send-btn,
+    .xur-inline-card .xur-send-btn {
+      width: 36px !important;
+      height: 36px !important;
+      border-radius: 50% !important;
+      background: #ffffff !important;
+      color: #09090b !important;
+      border: none !important;
+      cursor: pointer !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      transition: transform 0.2s, box-shadow 0.2s !important;
+      flex-shrink: 0 !important;
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15) !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    #assistant-xur .xur-send-btn:hover,
+    .xur-inline-card .xur-send-btn:hover {
+      transform: scale(1.08) !important;
+      box-shadow: 0 6px 18px rgba(255, 255, 255, 0.25) !important;
+    }
+
+    /* ------------------------------------
+       Astryx Sticky Bar Mode
+    ------------------------------------ */
+    #assistant-xur .xur-sticky-bar-card {
+      background: rgba(14, 15, 20, 0.92) !important;
+      backdrop-filter: blur(24px) !important;
+      -webkit-backdrop-filter: blur(24px) !important;
+      border: 1px solid var(--xur-border) !important;
+      border-radius: var(--xur-radius-pill) !important;
+      padding: 6px 8px 6px 16px !important;
+      box-shadow: var(--xur-shadow-card) !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+      cursor: pointer !important;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+      margin: 0 !important;
+    }
+
+    #assistant-xur .xur-sticky-bar-card:hover {
+      transform: translateY(-2px) !important;
+      border-color: var(--xur-border-hover) !important;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    #assistant-xur .xur-sticky-bar-title {
+      font-size: 13.5px !important;
+      font-weight: 600 !important;
+      color: #ffffff !important;
+      flex: 1 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+
+    /* ------------------------------------
+       Astryx AI Card Mode
+    ------------------------------------ */
+    #assistant-xur .xur-ai-card {
+      width: 400px !important;
+      max-width: 100% !important;
+      background: rgba(14, 15, 20, 0.92) !important;
+      backdrop-filter: blur(24px) !important;
+      border: 1px solid var(--xur-border) !important;
+      border-radius: var(--xur-radius-card) !important;
+      padding: 24px !important;
+      box-shadow: var(--xur-shadow-card) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 14px !important;
+      margin: 0 !important;
+    }
+
+    #assistant-xur .xur-ai-card-badge {
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+      background: rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid rgba(255, 255, 255, 0.12) !important;
+      color: #ffffff !important;
+      font-size: 11px !important;
+      font-weight: 700 !important;
+      padding: 4px 10px !important;
+      border-radius: var(--xur-radius-pill) !important;
+      align-self: flex-start !important;
+    }
+
+    #assistant-xur .xur-ai-card-title {
+      font-size: 19px !important;
+      font-weight: 800 !important;
+      letter-spacing: -0.02em !important;
+      color: #ffffff !important;
+    }
+
+    #assistant-xur .xur-ai-card-desc {
+      font-size: 13.5px !important;
+      color: var(--xur-text-secondary) !important;
+      line-height: 1.55 !important;
+    }
+
+    /* Credits Footer */
+    #assistant-xur .xur-credits,
+    .xur-inline-card .xur-credits {
+      text-align: center !important;
+      padding: 6px 0 8px 0 !important;
+      font-size: 11px !important;
+      color: var(--xur-text-muted) !important;
+      background: rgba(14, 15, 20, 0.95) !important;
+      margin: 0 !important;
+      flex-shrink: 0 !important;
+    }
+
+    #assistant-xur .xur-credits a,
+    .xur-inline-card .xur-credits a {
+      color: var(--xur-text-secondary) !important;
+      text-decoration: none !important;
+      font-weight: 600 !important;
+      transition: color 0.2s !important;
+    }
+
+    #assistant-xur .xur-credits a:hover,
+    .xur-inline-card .xur-credits a:hover {
+      color: #ffffff !important;
+      text-decoration: underline !important;
+    }
+  `;
+    const styleEl = document.createElement("style");
+    styleEl.id = "xur-widget-styles";
+    styleEl.textContent = css;
+    document.head.appendChild(styleEl);
+  }
+
+  // src/utils.js
+  function escapeHtml(str) {
+    if (!str)
+      return "";
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  }
+  var ICONS = {
+    chat: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>`,
+    close: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`,
+    send: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>`,
+    plus: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>`,
+    reload: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>`,
+    sparkles: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>`,
+    search: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`
+  };
+
+  // src/markdown.js
+  function parseMarkdown(text) {
+    if (!text)
+      return "";
+    let html = escapeHtml(text);
+    html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>");
+    html = html.replace(/^## (.*$)/gim, "<h2>$1</h2>");
+    html = html.replace(/^# (.*$)/gim, "<h1>$1</h1>");
+    html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    html = html.replace(/\*(.*?)\*/g, "<em>$1</em>");
+    html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+    html = html.replace(/^\s*[-*+]\s+(.*)$/gim, "<li>$1</li>");
+    html = html.replace(/(<li>.*<\/li>)/gim, "<ul>$1</ul>");
+    html = html.replace(/<\/ul>\s*<ul>/g, "");
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    html = html.replace(/\n\n/g, "<br/><br/>");
+    html = html.replace(/\n/g, "<br/>");
+    return html;
+  }
+
+  // src/sse.js
+  function streamResponse({ message, sessionId, onToken, onDone, onError }) {
+    const apiKey = getApiKey();
+    const backendUrl = getBackendUrl();
+    const params = new URLSearchParams({
+      api_key: apiKey,
+      user_message: message,
+      session_id: sessionId || "",
+      page_url: typeof window !== "undefined" ? window.location.href : ""
+    });
+    const url = `${backendUrl}/sse/get_response?${params.toString()}`;
+    const eventSource = new EventSource(url);
+    eventSource.onmessage = function(event) {
+      if (event.data === "[DONE]") {
+        eventSource.close();
+        if (onDone)
+          onDone();
+        return;
+      }
+      try {
+        const data = JSON.parse(event.data);
+        if (data.event === "done") {
+          eventSource.close();
+          if (onDone)
+            onDone();
+          return;
+        }
+        if (data.event === "assistant_delta" && data.content && onToken) {
+          onToken(data.content);
+        }
+      } catch (e) {
+        if (onToken)
+          onToken(event.data);
+      }
+    };
+    eventSource.onerror = function(err) {
+      console.error("[Xur SSE Error]", err);
+      eventSource.close();
+      if (onError)
+        onError(err);
+    };
+    return eventSource;
+  }
+
+  // src/chat.js
+  var XurChatUI = class {
+    constructor(config = {}, sessionId = "") {
+      this.config = config;
+      this.sessionId = sessionId;
+      this.isOpen = false;
+      this.isResponding = false;
+      this.container = null;
+      this.messagesEl = null;
+      this.inputEl = null;
+      this.currentText = "";
+      const forced = getScriptAttribute("forceddisplaytype") || typeof window !== "undefined" && window.forcedDisplayType;
+      this.displayType = forced || (config.displayType || "sticky");
+    }
+    mount() {
+      if (document.getElementById("assistant-xur")) {
+        return;
+      }
+      const companyName = this.config.companyName || "Xur AI";
+      const initialMessage = this.config.initialMessage || "Bonjour ! Je suis l'assistant Xur. Comment puis-je vous aider aujourd'hui ?";
+      const buttonOptions = this.config.button_options || [];
+      if (this.displayType === "inline") {
+        this.mountInlineMode(companyName, initialMessage, buttonOptions);
+        return;
+      }
+      const root = document.createElement("div");
+      root.id = "assistant-xur";
+      root.className = `xur-mode-${this.displayType}`;
+      if (this.displayType === "ai-card") {
+        this.mountAICardMode(root, companyName, initialMessage, buttonOptions);
+        return;
+      }
+      if (this.displayType === "sticky-bar") {
+        this.mountStickyBarMode(root, companyName, initialMessage, buttonOptions);
+        return;
+      }
+      root.innerHTML = `
+      <div id="xur-chat-window" class="xur-chat-window hidden">
+        <div class="xur-header">
+          <div class="xur-header-info">
+            <div class="xur-avatar">${ICONS.sparkles}</div>
+            <div class="xur-header-details">
+              <div class="xur-header-title">${companyName}</div>
+              <div class="xur-badge-online">En ligne</div>
+            </div>
+          </div>
+          <div class="xur-header-actions">
+            <button id="xur-reload-btn" class="xur-icon-btn" title="Recommencer">${ICONS.reload}</button>
+            <button id="xur-close-btn" class="xur-icon-btn" title="Fermer le chatbot">${ICONS.close}</button>
+          </div>
+        </div>
+
+        <div id="xur-messages" class="xur-messages"></div>
+
+        <div class="xur-composer-card">
+          <div class="xur-composer-box">
+            <button id="xur-attach-btn" class="xur-attach-btn" title="Ajouter une pi\xE8ce jointe">${ICONS.plus}</button>
+            <input id="xur-input" type="text" class="xur-input" placeholder="Poser une question \xE0 Xur..." />
+            <button id="xur-send-btn" class="xur-send-btn" title="Envoyer">${ICONS.send}</button>
+          </div>
+        </div>
+
+        <div class="xur-credits">
+          Propuls\xE9 par <a href="https://github.com/yacine20005/Xur" target="_blank">Xur AI</a>
+        </div>
+      </div>
+
+      <button id="xur-launcher-btn" class="xur-launcher-btn" title="Ouvrir le chat">
+        <span class="xur-launcher-badge"></span>
+        ${ICONS.chat}
+      </button>
+    `;
+      document.body.appendChild(root);
+      this.container = root;
+      this.messagesEl = root.querySelector("#xur-messages");
+      this.inputEl = root.querySelector("#xur-input");
+      this.bindEvents(buttonOptions);
+      this.addAssistantMessage(initialMessage, buttonOptions);
+    }
+    mountStickyBarMode(root, companyName, initialMessage, buttonOptions) {
+      root.innerHTML = `
+      <div id="xur-sticky-bar-card" class="xur-sticky-bar-card">
+        <div class="xur-avatar" style="width:32px;height:32px;">${ICONS.sparkles}</div>
+        <span class="xur-sticky-bar-title">${initialMessage}</span>
+        <button id="xur-bar-open-btn" class="xur-send-btn" style="width:36px;height:36px;" title="Ouvrir le chatbot">${ICONS.send}</button>
+      </div>
+
+      <div id="xur-chat-window" class="xur-chat-window hidden" style="position:fixed;bottom:92px;left:50%;transform:translateX(-50%);width:400px;">
+        <div class="xur-header">
+          <div class="xur-header-info">
+            <div class="xur-avatar">${ICONS.sparkles}</div>
+            <div class="xur-header-details">
+              <div class="xur-header-title">${companyName}</div>
+              <div class="xur-badge-online">En ligne</div>
+            </div>
+          </div>
+          <div class="xur-header-actions">
+            <button id="xur-reload-btn" class="xur-icon-btn" title="Recommencer">${ICONS.reload}</button>
+            <button id="xur-close-btn" class="xur-icon-btn" title="Fermer">${ICONS.close}</button>
+          </div>
+        </div>
+        <div id="xur-messages" class="xur-messages"></div>
+        <div class="xur-composer-card">
+          <div class="xur-composer-box">
+            <button id="xur-attach-btn" class="xur-attach-btn" title="Pi\xE8ce jointe">${ICONS.plus}</button>
+            <input id="xur-input" type="text" class="xur-input" placeholder="Poser une question..." />
+            <button id="xur-send-btn" class="xur-send-btn" title="Envoyer">${ICONS.send}</button>
+          </div>
+        </div>
+      </div>
+    `;
+      document.body.appendChild(root);
+      this.container = root;
+      this.messagesEl = root.querySelector("#xur-messages");
+      this.inputEl = root.querySelector("#xur-input");
+      const barCard = root.querySelector("#xur-sticky-bar-card");
+      barCard.addEventListener("click", (e) => {
+        e.stopPropagation();
+        this.toggle(true);
+      });
+      this.bindEvents(buttonOptions);
+      this.addAssistantMessage(initialMessage, buttonOptions);
+    }
+    mountAICardMode(root, companyName, initialMessage, buttonOptions) {
+      root.innerHTML = `
+      <div class="xur-ai-card">
+        <div class="xur-ai-card-badge">${ICONS.sparkles} Propuls\xE9 par Xur AI</div>
+        <div class="xur-ai-card-title">${companyName}</div>
+        <div class="xur-ai-card-desc">${initialMessage}</div>
+        <div id="xur-options-container" class="xur-options-container"></div>
+        <div class="xur-composer-box">
+          <button id="xur-attach-btn" class="xur-attach-btn">${ICONS.plus}</button>
+          <input id="xur-input" type="text" class="xur-input" placeholder="Posez une question..." />
+          <button id="xur-send-btn" class="xur-send-btn">${ICONS.send}</button>
+        </div>
+      </div>
+    `;
+      document.body.appendChild(root);
+      this.container = root;
+      this.inputEl = root.querySelector("#xur-input");
+      const sendBtn = root.querySelector("#xur-send-btn");
+      sendBtn.addEventListener("click", () => this.handleSend());
+      this.inputEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter")
+          this.handleSend();
+      });
+      const optionsContainer = root.querySelector("#xur-options-container");
+      if (buttonOptions && buttonOptions.length > 0) {
+        buttonOptions.forEach((opt) => {
+          const btn = document.createElement("button");
+          btn.className = "xur-option-btn";
+          btn.textContent = opt;
+          btn.addEventListener("click", () => this.handleSend(opt));
+          optionsContainer.appendChild(btn);
+        });
+      }
+    }
+    mountInlineMode(companyName, initialMessage, buttonOptions) {
+      const doMount = () => {
+        const target = document.getElementById("xur-inline-target");
+        if (!target)
+          return false;
+        if (document.getElementById("xur-inline-card-mounted"))
+          return true;
+        const card = document.createElement("div");
+        card.id = "xur-inline-card-mounted";
+        card.className = "xur-inline-card";
+        card.innerHTML = `
+        <div class="xur-header">
+          <div class="xur-header-info">
+            <div class="xur-avatar">${ICONS.sparkles}</div>
+            <div class="xur-header-details">
+              <div class="xur-header-title">${companyName}</div>
+              <div class="xur-badge-online">Assistant Virtuel</div>
+            </div>
+          </div>
+        </div>
+        <div id="xur-messages" class="xur-messages"></div>
+        <div class="xur-composer-card">
+          <div class="xur-composer-box">
+            <button id="xur-attach-btn" class="xur-attach-btn">${ICONS.plus}</button>
+            <input id="xur-input" type="text" class="xur-input" placeholder="Posez votre question \xE0 l'assistant de Yacine..." />
+            <button id="xur-send-btn" class="xur-send-btn">${ICONS.send}</button>
+          </div>
+        </div>
+      `;
+        target.appendChild(card);
+        this.container = card;
+        this.messagesEl = card.querySelector("#xur-messages");
+        this.inputEl = card.querySelector("#xur-input");
+        this.bindEvents(buttonOptions);
+        this.addAssistantMessage(initialMessage, buttonOptions);
+        return true;
+      };
+      if (!doMount()) {
+        let attempts = 0;
+        const timer = setInterval(() => {
+          attempts++;
+          if (doMount() || attempts > 50) {
+            clearInterval(timer);
+          }
+        }, 100);
+      }
+    }
+    bindEvents(buttonOptions = []) {
+      const launcherBtn = this.container.querySelector("#xur-launcher-btn");
+      const closeBtn = this.container.querySelector("#xur-close-btn");
+      const reloadBtn = this.container.querySelector("#xur-reload-btn");
+      const sendBtn = this.container.querySelector("#xur-send-btn");
+      if (launcherBtn) {
+        launcherBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.toggle();
+        });
+      }
+      if (closeBtn) {
+        closeBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          this.toggle(false);
+        });
+      }
+      if (reloadBtn) {
+        reloadBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (this.messagesEl) {
+            this.messagesEl.innerHTML = "";
+            const initialMessage = this.config.initialMessage || "Bonjour ! Comment puis-je vous aider ?";
+            this.addAssistantMessage(initialMessage, buttonOptions);
+          }
+        });
+      }
+      if (sendBtn)
+        sendBtn.addEventListener("click", () => this.handleSend());
+      if (this.inputEl) {
+        this.inputEl.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            this.handleSend();
+          }
+        });
+      }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && this.isOpen) {
+          this.toggle(false);
+        }
+      });
+      if (this.messagesEl) {
+        this.messagesEl.addEventListener("click", (e) => {
+          const optionBtn = e.target.closest(".xur-option-btn");
+          if (optionBtn) {
+            const text = optionBtn.textContent.replace(/^✦\s*/, "").trim();
+            this.handleSend(text);
+          }
+        });
+      }
+    }
+    toggle(forceState = null) {
+      this.isOpen = forceState !== null ? forceState : !this.isOpen;
+      const windowEl = this.container.querySelector("#xur-chat-window");
+      const launcherBtn = this.container.querySelector("#xur-launcher-btn");
+      if (this.isOpen) {
+        if (windowEl)
+          windowEl.classList.remove("hidden");
+        if (launcherBtn)
+          launcherBtn.innerHTML = ICONS.close;
+        if (this.inputEl)
+          this.inputEl.focus();
+      } else {
+        if (windowEl)
+          windowEl.classList.add("hidden");
+        if (launcherBtn)
+          launcherBtn.innerHTML = `${ICONS.chat}<span class="xur-launcher-badge"></span>`;
+      }
+    }
+    addUserMessage(text) {
+      if (!this.messagesEl)
+        return;
+      const wrapper = document.createElement("div");
+      wrapper.className = "xur-msg-wrapper user";
+      wrapper.innerHTML = `<div class="xur-bubble">${parseMarkdown(text)}</div>`;
+      this.messagesEl.appendChild(wrapper);
+      this.scrollToBottom();
+    }
+    addAssistantMessage(text, options = []) {
+      if (!this.messagesEl)
+        return;
+      const wrapper = document.createElement("div");
+      wrapper.className = "xur-msg-wrapper assistant";
+      let html = `<div class="xur-bubble">${parseMarkdown(text)}</div>`;
+      if (options && options.length > 0) {
+        html += `<div class="xur-options-container">`;
+        options.forEach((opt) => {
+          html += `<button class="xur-option-btn"><span style="opacity:0.7;font-size:11px;">\u2726</span> ${opt}</button>`;
+        });
+        html += `</div>`;
+      }
+      wrapper.innerHTML = html;
+      this.messagesEl.appendChild(wrapper);
+      this.scrollToBottom();
+    }
+    handleSend(customText = null) {
+      const text = customText || (this.inputEl ? this.inputEl.value.trim() : "");
+      if (!text || this.isResponding)
+        return;
+      if (!customText && this.inputEl) {
+        this.inputEl.value = "";
+      }
+      this.addUserMessage(text);
+      this.isResponding = true;
+      if (!this.messagesEl)
+        return;
+      const wrapper = document.createElement("div");
+      wrapper.className = "xur-msg-wrapper assistant";
+      wrapper.innerHTML = `<div class="xur-bubble">...</div>`;
+      this.messagesEl.appendChild(wrapper);
+      this.scrollToBottom();
+      const bubbleEl = wrapper.querySelector(".xur-bubble");
+      this.currentText = "";
+      streamResponse({
+        message: text,
+        sessionId: this.sessionId,
+        onToken: (token) => {
+          this.currentText += token;
+          bubbleEl.innerHTML = parseMarkdown(this.currentText);
+          this.scrollToBottom();
+        },
+        onDone: () => {
+          this.isResponding = false;
+          if (!this.currentText) {
+            bubbleEl.innerHTML = parseMarkdown("D\xE9sol\xE9, aucune r\xE9ponse n'a \xE9t\xE9 re\xE7ue.");
+          }
+        },
+        onError: (err) => {
+          this.isResponding = false;
+          if (!this.currentText) {
+            bubbleEl.innerHTML = `<span style="color: #ef4444;">Erreur de connexion au serveur Xur.</span>`;
+          }
+        }
+      });
+    }
+    scrollToBottom() {
+      if (this.messagesEl) {
+        this.messagesEl.scrollTop = this.messagesEl.scrollHeight;
+      }
+    }
+  };
+
+  // src/tracker.js
+  var XurTracker = class {
+    static init() {
+    }
+    static track(eventName, data = {}) {
+      console.log("[XurTracker]", eventName, data);
+    }
+  };
+
+  // src/index.js
+  async function initXurWidget() {
+    const apiKey = getApiKey();
+    const backendUrl = getBackendUrl();
+    const lang = getLanguage();
+    console.log(`[Xur AI Widget] Initializing with key: ${apiKey} on backend: ${backendUrl}`);
+    let configData = {
+      companyName: "Xur AI",
+      initialMessage: "Bonjour ! Comment puis-je vous aider aujourd'hui ?",
+      button_options: ["Quels sont les d\xE9lais ?", "Comment contacter le support ?"],
+      theme: { primaryColor: "#2563eb", fontFamily: "DM Sans, sans-serif" }
+    };
+    let sessionId = "xur-session-" + Math.random().toString(36).substring(2, 9);
+    try {
+      const res = await fetch(`${backendUrl}/api/assistant/init/${apiKey}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ page_url: typeof window !== "undefined" ? window.location.href : "" })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.session_id)
+          sessionId = data.session_id;
+        if (data.response)
+          configData = data.response;
+      }
+    } catch (err) {
+      console.warn("[Xur AI Widget] Backend init unavailable, falling back to local defaults.", err);
+    }
+    injectStyles(configData.theme || {});
+    const chatUI = new XurChatUI(configData, sessionId);
+    chatUI.mount();
+    XurTracker.init();
+    window.XurWidget = {
+      open: () => chatUI.toggle(true),
+      close: () => chatUI.toggle(false),
+      toggle: () => chatUI.toggle(),
+      send: (msg) => chatUI.handleSend(msg)
+    };
+  }
+  if (typeof document !== "undefined") {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initXurWidget);
+    } else {
+      initXurWidget();
+    }
+  }
+})();
