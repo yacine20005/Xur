@@ -1,4 +1,4 @@
-# ✨ Xur — AI Chatbot Widget MVP
+# Xur — AI Chatbot Widget MVP
 
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?style=flat&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Google Gemini](https://img.shields.io/badge/AI_Model-Google_Gemini-4285F4.svg?style=flat&logo=google-gemini)](https://aistudio.google.com/)
@@ -10,25 +10,24 @@ Powered by **Google Gemini** and a **FastAPI** backend architecture, Xur respond
 
 ---
 
-## 📸 Demo Preview
+## Demo Preview
 
 The assistant appears as a modern floating widget with glassmorphism blur effects, updated typography, quick suggestion options, and full Markdown formatting support.
 
 ---
 
-## ⚡ Key Features
+## Key Features
 
-- 🚀 **Ultra-Simple Integration**: A single `<script src="..." api-key="..."></script>` tag is all you need to embed it into Shopify, WooCommerce, or any custom HTML site.
-- 💬 **Real-time Streaming (SSE)**: Continuous flow of responses generated token-by-token by AI with zero latency.
-- 📚 **RAG / Business Context (`knowledge_base.md`)**: Structured answers strictly grounded in company documentation (shipping, returns, FAQ, pricing).
-- 🎨 **Modern & Responsive Design**: Sleek, responsive UI compatible with mobile and desktop devices, customizable via CSS.
-- 📦 **Modular Frontend Architecture**: JavaScript codebase organized into ES6 modules under `frontend/src/` and bundled into a single file via `esbuild`.
-- 💸 **$0 Infrastructure Cost (MVP)**: Leverages Google AI Studio's free tier (15 RPM, 1M tokens/day) and features an automatic offline demo mode if no API key is configured.
-- 🔒 **Clean Codebase**: Completely streamlined and decoupled architecture.
+- **Ultra-Simple Integration**: A single `<script src="..." api-key="..."></script>` tag is all you need to embed it into Shopify, WooCommerce, or any custom HTML site.
+- **Real-time Streaming (SSE)**: Continuous flow of responses generated token-by-token by AI with zero latency.
+- **RAG / Business Context**: Structured answers strictly grounded in company documentation (shipping, returns, FAQ, pricing).
+- **Modern & Responsive Design**: Sleek, responsive UI compatible with mobile and desktop devices, customizable via CSS.
+- **Modular Frontend Architecture**: JavaScript codebase organized into ES6 modules under `frontend/src/` and bundled into a single file via `esbuild`.
+- **Clean Codebase**: Completely streamlined and decoupled architecture.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Xur/
@@ -68,7 +67,7 @@ Xur/
 
 ---
 
-## 🚀 Quick Start (Local Development)
+## Quick Start (Local Development)
 
 ### 1. Backend Setup (Python)
 
@@ -90,7 +89,7 @@ PORT=8005
 HOST=0.0.0.0
 ```
 
-> 💡 *Note: If no API key is specified, the backend automatically falls back to **Offline Demo Mode**, allowing you to test the widget without any configuration.*
+> *Note: If no API key is specified, the backend automatically falls back to **Offline Demo Mode**, allowing you to test the widget without any configuration.*
 
 ### 3. Start the Backend
 
@@ -112,7 +111,7 @@ npm run build
 ### 5. Test on Demo Page
 
 Simply open your browser to:
-👉 **`http://localhost:8005/demo`**
+**`http://localhost:8005/demo`**
 
 ---
 
@@ -127,7 +126,7 @@ To integrate the Xur chatbot into any website (Shopify, WordPress, Webflow, Reac
 
 ---
 
-## 🗺️ Roadmap & SaaS Outlook
+## Roadmap
 
 - [x] **MVP Core**: FastAPI Backend + SSE Streaming + Gemini Integration + esbuild Bundler
 - [ ] **Multi-tenancy DB**: Storage for merchant contexts & chat history in PostgreSQL
@@ -137,15 +136,6 @@ To integrate the Xur chatbot into any website (Shopify, WordPress, Webflow, Reac
 
 ---
 
-## 👤 Author
+## Author
 
 Designed and developed by **[Yacine Hamadouche](https://github.com/yacine20005)**.
- bord Admin** : Interface de gestion des marchands, personnalisation du thème et analytics (ratings, taux de clics)
-- [ ] **Connecteurs E-commerce** : Synchronisation du catalogue produits Shopify/WooCommerce
-- [ ] **Système d'Abonnement** : Gestion des clés API et facturation Stripe SaaS
-
----
-
-## 👤 Auteur
-
-Projet conçu et développé par **[Yacine Hamadouche](https://github.com/yacine20005)**.
